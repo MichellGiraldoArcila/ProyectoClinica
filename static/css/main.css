@@ -1,0 +1,26 @@
+:root {
+    --sv-primary: #0d6efd;
+    --sv-bg: #f8fafc;
+}
+
+body {
+    background-color: var(--sv-bg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.card {
+    border-radius: 0.5rem;
+}
+
+.navbar-brand {
+    letter-spacing: 0.02em;
+}
+
+.table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.form-label {
+    font-weight: 500;
+}

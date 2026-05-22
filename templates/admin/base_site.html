@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | HCE Salud y Vida{% endblock %}
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">IPS Salud y Vida — HCE (Res. 866/2021)</a></div>
+{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin_custom.css' %}">
+{% endblock %}

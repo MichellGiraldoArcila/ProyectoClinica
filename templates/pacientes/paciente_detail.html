@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}{{ paciente.nombre_completo }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h3 text-primary mb-1">{{ paciente.nombre_completo }}</h1>
+        <p class="text-muted mb-0">{{ paciente.tipo_documento }} {{ paciente.numero_documento }}</p>
+    </div>
+    <div class="text-nowrap">
+        <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-primary">Editar</a>
+        <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light fw-semibold">Identificación</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Fecha nacimiento</dt><dd class="col-sm-7">{{ paciente.fecha_nacimiento }}</dd>
+                    <dt class="col-sm-5">Sexo biológico</dt><dd class="col-sm-7">{{ paciente.get_sexo_biologico_display }}</dd>
+                    <dt class="col-sm-5">Identidad de género</dt><dd class="col-sm-7">{{ paciente.get_identidad_genero_display }}</dd>
+                    <dt class="col-sm-5">Ocupación</dt><dd class="col-sm-7">{{ paciente.ocupacion|default:"—" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light fw-semibold">Residencia y afiliación</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">País residencia</dt><dd class="col-sm-7">{{ paciente.pais_residencia }}</dd>
+                    <dt class="col-sm-5">Municipio</dt><dd class="col-sm-7">{{ paciente.municipio_residencia }}</dd>
+                    <dt class="col-sm-5">Zona</dt><dd class="col-sm-7">{{ paciente.get_zona_residencia_display }}</dd>
+                    <dt class="col-sm-5">Administradora</dt><dd class="col-sm-7">{{ paciente.administradora_plan }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Nacionalidades</div>
+            <ul class="list-group list-group-flush">
+                {% for n in paciente.nacionalidades.all %}
+                <li class="list-group-item">{{ n.pais }}</li>
+                {% empty %}<li class="list-group-item text-muted">Sin registros</li>{% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Discapacidades</div>
+            <ul class="list-group list-group-flush">
+                {% for d in paciente.discapacidades.all %}
+                <li class="list-group-item">{{ d.discapacidad }}</li>
+                {% empty %}<li class="list-group-item text-muted">Sin registros</li>{% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Oposición a donación</div>
+            <div class="card-body">
+                {% if paciente.oposicion_donacion %}
+                <p class="mb-1">{{ paciente.oposicion_donacion.get_manifestacion_display }}</p>
+                <p class="text-muted small mb-0">Registro: {{ paciente.oposicion_donacion.fecha_registro }}</p>
+                {% else %}<p class="text-muted mb-0">No registrada</p>{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Voluntad anticipada</div>
+            <ul class="list-group list-group-flush">
+                {% for v in paciente.voluntades_anticipadas.all %}
+                <li class="list-group-item">{{ v.get_tiene_documento_display }} — {{ v.fecha_documento|default:"sin fecha" }}</li>
+                {% empty %}<li class="list-group-item text-muted">Sin registros</li>{% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

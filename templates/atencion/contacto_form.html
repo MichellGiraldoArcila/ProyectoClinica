@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<h1 class="h3 text-primary mb-4">{{ titulo }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Datos del contacto</div>
+        <div class="card-body">
+            <div class="row g-3">
+                {% for field in form %}
+                <div class="col-12 col-md-6">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Tecnologías en salud</div>
+        <div class="card-body">
+            {{ tecnologia_formset.management_form }}
+            {% for f in tecnologia_formset %}
+            <div class="border rounded p-3 mb-3">
+                <div class="row g-2">
+                    {% for field in f.visible_fields %}
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'atencion:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+</form>
+{% endblock %}

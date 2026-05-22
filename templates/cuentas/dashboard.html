@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Panel principal — Salud y Vida{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-12">
+        <h1 class="h3 text-primary">Bienvenido, {{ user.get_full_name|default:user.username }}</h1>
+        <p class="text-muted">Sistema de historia clínica electrónica conforme a la Resolución 866 de 2021.</p>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 card-title">Gestión de pacientes</h2>
+                <p class="card-text text-muted">Registrar, consultar y actualizar información del paciente, nacionalidades, discapacidades, oposición a donación y voluntad anticipada.</p>
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-primary">Ir a pacientes</a>
+                <a href="{% url 'pacientes:crear' %}" class="btn btn-primary ms-2">Nuevo paciente</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 card-title">Contacto con el servicio de salud</h2>
+                <p class="card-text text-muted">Atención en urgencias: triage, diagnóstico de ingreso, modalidad, vía de ingreso y tecnologías en salud.</p>
+                <a href="{% url 'atencion:lista' %}" class="btn btn-outline-primary">Ir a atenciones</a>
+                <a href="{% url 'atencion:crear' %}" class="btn btn-primary ms-2">Nueva atención</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card shadow-sm border-primary">
+            <div class="card-body">
+                <h2 class="h5 card-title">Catálogos normativos</h2>
+                <p class="card-text text-muted mb-0">Administre catálogos CIE-10, DIVIPOLA, CIUO-88, prestadores SGSSS y demás tablas de referencia desde el panel Django personalizado.</p>
+                <a href="/admin/" class="btn btn-secondary mt-3">Abrir administración</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

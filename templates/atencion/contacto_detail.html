@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Atención #{{ contacto.pk }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mb-4">
+    <h1 class="h3 text-primary">Atención en urgencias #{{ contacto.pk }}</h1>
+    <div>
+        <a href="{% url 'atencion:editar' contacto.pk %}" class="btn btn-primary">Editar</a>
+        <a href="{% url 'atencion:lista' %}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Paciente y prestador</div>
+            <div class="card-body">
+                <p><strong>Paciente:</strong> {{ contacto.paciente.nombre_completo }}</p>
+                <p><strong>Prestador:</strong> {{ contacto.prestador }}</p>
+                <p><strong>Inicio atención:</strong> {{ contacto.fecha_inicio_atencion }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Clasificación urgencias</div>
+            <div class="card-body">
+                <p><strong>Causa:</strong> {{ contacto.causa }}</p>
+                <p><strong>Vía ingreso:</strong> {{ contacto.via_ingreso }}</p>
+                <p><strong>Triage:</strong> {{ contacto.get_clasificacion_triage_display|default:"—" }} ({{ contacto.fecha_triage|default:"—" }})</p>
+                <p><strong>Diagnóstico ingreso:</strong> {{ contacto.diagnostico_ingreso }} ({{ contacto.get_tipo_diagnostico_ingreso_display }})</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">Tecnologías en salud</div>
+            <ul class="list-group list-group-flush">
+                {% for t in contacto.tecnologias.all %}
+                <li class="list-group-item">{{ t.tipo_tecnologia }} — {{ t.nombre_tecnologia }} ({{ t.codigo_tecnologia }})</li>
+                {% empty %}<li class="list-group-item text-muted">Sin tecnologías registradas</li>{% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

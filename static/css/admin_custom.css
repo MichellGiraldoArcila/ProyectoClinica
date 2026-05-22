@@ -1,0 +1,28 @@
+#header {
+    background: #0b5ed7;
+    color: #fff;
+}
+
+#header a:link, #header a:visited {
+    color: #fff;
+}
+
+.module h2, .module caption {
+    background: #0b5ed7;
+}
+
+div.breadcrumbs {
+    background: #084298;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input {
+    background: #0b5ed7;
+}
+
+.button:hover, input[type=submit]:hover {
+    background: #084298;
+}
+
+#site-name a {
+    font-weight: 600;
+}
