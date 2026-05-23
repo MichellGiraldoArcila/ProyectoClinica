@@ -47,7 +47,22 @@ class Paciente(models.Model):
         null=True,
         blank=True,
         related_name='pacientes',
-        verbose_name='Ocupación (CIUO-88)',
+        verbose_name='Ocupación al momento de la atención (CIUO-88)',
+        limit_choices_to={'nivel': '5'},
+        help_text='Seleccione del catálogo CIUO-88 o la opción Otra (9999).',
+    )
+    ocupacion_otra = models.CharField(
+        'Descripción de ocupación (Otra)',
+        max_length=250,
+        blank=True,
+        help_text='Completar solo si la ocupación seleccionada es Otra.',
+    )
+    paises_nacionalidad = models.ManyToManyField(
+        Pais,
+        through='PacienteNacionalidad',
+        related_name='pacientes_por_nacionalidad',
+        verbose_name='Países de nacionalidad',
+        help_text='Res. 866: un paciente puede tener múltiples países de nacionalidad.',
     )
     pais_residencia = models.ForeignKey(
         Pais,
@@ -123,27 +138,32 @@ class Paciente(models.Model):
 
 
 class PacienteNacionalidad(models.Model):
-    """Múltiples nacionalidades por paciente (Res. 866)."""
+    """
+    País de la nacionalidad — Res. 866/2021.
+    Estructura que permite múltiples registros por paciente (ISO 3166 + nombre vía catálogo País).
+    """
     paciente = models.ForeignKey(
         Paciente,
         on_delete=models.CASCADE,
         related_name='nacionalidades',
+        verbose_name='Paciente',
     )
     pais = models.ForeignKey(
         Pais,
         on_delete=models.PROTECT,
         related_name='nacionalidades_paciente',
+        verbose_name='País de nacionalidad',
     )
 
     class Meta:
         db_table = 'pac_nacionalidad'
-        verbose_name = 'Nacionalidad del paciente'
-        verbose_name_plural = 'Nacionalidades del paciente'
+        verbose_name = 'País de la nacionalidad'
+        verbose_name_plural = 'Países de nacionalidad del paciente'
         ordering = ['pais__nombre']
         unique_together = [('paciente', 'pais')]
 
     def __str__(self):
-        return f'{self.paciente} - {self.pais}'
+        return f'{self.paciente.numero_documento} — nacionalidad: {self.pais.nombre}'
 
 
 class PacienteDiscapacidad(models.Model):

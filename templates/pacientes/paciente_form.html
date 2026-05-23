@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 {% block title %}{{ titulo }}{% endblock %}
 {% block content %}
 <h1 class="h3 text-primary mb-4">{{ titulo }}</h1>
+
+{% if form.non_field_errors %}
+<div class="alert alert-danger">{{ form.non_field_errors }}</div>
+{% endif %}
+{% if nacionalidad_formset.non_form_errors %}
+<div class="alert alert-danger">{{ nacionalidad_formset.non_form_errors }}</div>
+{% endif %}
+
 <form method="post" novalidate>
     {% csrf_token %}
     <div class="card shadow-sm mb-4">
@@ -10,56 +17,127 @@
         <div class="card-body">
             <div class="row g-3">
                 {% for field in form %}
+                {% if field.name != 'ocupacion_otra' %}
                 <div class="col-12 col-md-6">
                     <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
+                <div class="col-12 col-md-6" id="campo-ocupacion-otra">
+                    <label class="form-label" for="id_ocupacion_otra">{{ form.ocupacion_otra.label }}</label>
+                    {{ form.ocupacion_otra }}
+                    {% if form.ocupacion_otra.errors %}
+                    <div class="text-danger small">{{ form.ocupacion_otra.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">País de la nacionalidad — Res. 866 (múltiples registros)</div>
+        <div class="card-body border-bottom">
+            <p class="text-muted small mb-0">
+                Registre al menos un país. Puede agregar otra fila si tiene más de una nacionalidad.
+            </p>
+        </div>
+        <div class="card-body">
+            {{ nacionalidad_formset.management_form }}
+            {% if nacionalidad_formset.non_form_errors %}
+            <div class="alert alert-danger">{{ nacionalidad_formset.non_form_errors }}</div>
+            {% endif %}
+            {% for f in nacionalidad_formset %}
+            <div class="row g-2 mb-2 align-items-end border-bottom pb-2">
+                {% for field in f.visible_fields %}
+                <div class="col-12 col-md-5">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                </div>
+                {% endfor %}
+                {% if f.DELETE %}
+                <div class="col-auto">
+                    <label class="form-label d-block">Eliminar</label>
+                    {{ f.DELETE }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Discapacidades (múltiples)</div>
+        <div class="card-body">
+            {{ discapacidad_formset.management_form }}
+            {% for f in discapacidad_formset %}
+            <div class="row g-2 mb-2 align-items-end">
+                {% for field in f.visible_fields %}
+                <div class="col-12 col-md-6">
+                    <label class="form-label">{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
                 </div>
                 {% endfor %}
             </div>
-        </div>
-    </div>
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Nacionalidades (múltiples)</div>
-        <div class="card-body">{{ nacionalidad_formset.management_form }}
-            {% for f in nacionalidad_formset %}
-            <div class="row g-2 mb-2 align-items-end">{{ f.id }}{% for field in f.visible_fields %}<div class="col">{{ field }}</div>{% endfor %}</div>
             {% endfor %}
         </div>
     </div>
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Discapacidades (múltiples)</div>
-        <div class="card-body">{{ discapacidad_formset.management_form }}
-            {% for f in discapacidad_formset %}
-            <div class="row g-2 mb-2 align-items-end">{{ f.id }}{% for field in f.visible_fields %}<div class="col">{{ field }}</div>{% endfor %}</div>
-            {% endfor %}
-        </div>
-    </div>
+
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-6">
             <div class="card shadow-sm">
-                <div class="card-header bg-light fw-semibold">Oposición a donación</div>
+                <div class="card-header bg-light fw-semibold">Oposición a donación (opcional)</div>
                 <div class="card-body">
                     {% for field in oposicion_form %}
-                    <div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
         <div class="col-12 col-md-6">
             <div class="card shadow-sm">
-                <div class="card-header bg-light fw-semibold">Voluntad anticipada</div>
+                <div class="card-header bg-light fw-semibold">Voluntad anticipada (opcional)</div>
                 <div class="card-body">
                     {% for field in voluntad_form %}
-                    <div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+
     <div class="d-flex gap-2 flex-wrap">
         <button type="submit" class="btn btn-primary">Guardar</button>
         <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>
+
+<script>
+(function () {
+    const sel = document.getElementById('id_ocupacion');
+    const campo = document.getElementById('campo-ocupacion-otra');
+    const input = document.getElementById('id_ocupacion_otra');
+    function actualizar() {
+        const esOtra = sel && sel.value === '9999';
+        campo.style.display = esOtra ? 'block' : 'none';
+        if (input) input.required = esOtra;
+    }
+    if (sel) {
+        sel.addEventListener('change', actualizar);
+        actualizar();
+    }
+})();
+</script>
 {% endblock %}

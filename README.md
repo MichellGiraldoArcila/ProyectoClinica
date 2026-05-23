@@ -42,7 +42,9 @@ ProyectoClinica/
 ### Decisiones de modelado
 
 - **Oposición a donación** y **voluntad anticipada**: tablas separadas (`OneToOne` / `ForeignKey`), no campos embebidos en paciente.
-- **Nacionalidades** y **discapacidades**: relaciones **muchos a muchos** mediante tablas intermedias (`PacienteNacionalidad`, `PacienteDiscapacidad`).
+- **País de la nacionalidad**: tabla `PacienteNacionalidad` (múltiples países ISO 3166 por paciente) + `ManyToManyField` explícito en Paciente.
+- **Ocupación CIUO-88**: jerarquía en `cat_ocupacion` (gran grupo → ocupación); el paciente solo referencia el nivel hoja (4 dígitos).
+- **Discapacidades**: relación **muchos a muchos** (`PacienteDiscapacidad`).
 - Campos con **más de 5 opciones** → modelos en `catalogos` (tipos documento, modalidad, vía ingreso, causa, finalidad, etc.).
 - Campos con **5 o menos opciones** → `TextChoices` en `core/choices.py` (sexo, zona, triage, grupo servicios, etc.).
 
@@ -101,6 +103,7 @@ DB_ENGINE=sqlite
 ```bash
 python manage.py migrate
 python manage.py seed_catalogos
+python manage.py seed_pacientes_demo
 ```
 
 ### 4. Superusuario
@@ -148,9 +151,21 @@ python manage.py check
 5. HTTPS obligatorio en producción.
 6. Respaldos automáticos de BD y rotación de logs.
 
-## Equipo / IPS ficticia
+## Manual de usuario (equipo de trabajo)
 
-**IPS Salud y Vida** — Proyecto académico Ingeniería de Software / Tendencias en Desarrollo de Software (2026-1).
+Documentación para usar, explicar y sustentar el proyecto:
+
+| Formato | Ubicación |
+|---------|-----------|
+| Word (.docx) | `docs/MANUAL_USUARIO.docx` |
+| PDF | `docs/MANUAL_USUARIO.pdf` |
+| Markdown (editable) | `docs/MANUAL_USUARIO.md` |
+
+Para regenerar Word desde Markdown: `python docs/generar_manual_word.py`
+
+## Institución
+
+**IPS Salud y Vida** — Proyecto académico Ingeniería de Software / Tendencias en Desarrollo de Software (2026-1). Los catálogos incluyen EPS e IPS de referencia del territorio nacional (SURA, Sanitas, Nueva EPS, Compensar, hospitales de Medellín, Cali y Bogotá).
 
 ## Licencia
 

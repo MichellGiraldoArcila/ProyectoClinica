@@ -1,15 +1,18 @@
 # Modelo Entidad-Relación — HCE Salud y Vida
 
-Diagrama alineado con Resolución 866/2021 (alcance implementado).
+Alineado con Resolución 866/2021 y correcciones de modelado académico.
 
 ```mermaid
 erDiagram
-    PAIS ||--o{ PACIENTE_NACIONALIDAD : tiene
-    PACIENTE ||--o{ PACIENTE_NACIONALIDAD : tiene
+    PAIS ||--o{ PACIENTE_NACIONALIDAD : "pais de nacionalidad"
+    PACIENTE ||--o{ PACIENTE_NACIONALIDAD : "tiene multiples"
+    PAIS ||--o{ PACIENTE : "pais residencia habitual"
+
+    OCUPACION ||--o{ OCUPACION : "jerarquia CIUO-88 padre"
+    OCUPACION ||--o{ PACIENTE : "ocupacion momento atencion"
+
     TIPO_DOCUMENTO ||--o{ PACIENTE : identifica
     MUNICIPIO ||--o{ PACIENTE : reside
-    PAIS ||--o{ PACIENTE : residencia
-    OCUPACION ||--o{ PACIENTE : ejerce
     ETNIA ||--o{ PACIENTE : pertenece
     PRESTADOR ||--o{ PACIENTE : afilia
     PACIENTE ||--o| OPOSICION_DONACION : registra
@@ -19,24 +22,36 @@ erDiagram
 
     PACIENTE ||--o{ CONTACTO_SALUD : atiende
     PRESTADOR ||--o{ CONTACTO_SALUD : presta
-    MODALIDAD ||--o{ CONTACTO_SALUD : usa
-    VIA_INGRESO ||--o{ CONTACTO_SALUD : ingresa
-    CAUSA ||--o{ CONTACTO_SALUD : motiva
-    DIAGNOSTICO ||--o{ CONTACTO_SALUD : diagnostica
-    CONTACTO_SALUD ||--o{ TECNOLOGIA_SALUD : aplica
-    CONTACTO_SALUD ||--o| RESULTADO_VALORACION : cierra
-    TIPO_TECNOLOGIA ||--o{ TECNOLOGIA_SALUD : clasifica
 ```
+
+## País de la nacionalidad (requisito expreso)
+
+| Elemento | Tabla Django | Descripción |
+|----------|--------------|-------------|
+| Catálogo país | `cat_pais` | Código ISO 3166 (3) + nombre |
+| Relación N:M | `pac_nacionalidad` | Un paciente → **múltiples** países de nacionalidad |
+| Campo explícito en Paciente | `paises_nacionalidad` | `ManyToManyField` through `PacienteNacionalidad` |
+
+**No** existe `codigo_nacionalidad` duplicado en `paciente`: solo la FK única `ocupacion_id` hacia CIUO-88.
+
+## Ocupación CIUO-88 (jerarquía normativa)
+
+| Nivel | Código | Asignable al paciente |
+|-------|--------|------------------------|
+| 1 Gran grupo | 1 dígito (0-9) | No |
+| 2 Subgrupo mayor | 2 dígitos | No |
+| 3 Subgrupo | 3 dígitos | No |
+| 4 Grupo primario | 4 dígitos (agrupación) | No |
+| 5 Ocupación | 4 dígitos (hoja CIUO) | **Sí** |
+
+Auto-relación: `cat_ocupacion.padre_id` → `cat_ocupacion.codigo`
+
+El paciente referencia **una sola** FK: `paciente.ocupacion_id` → ocupación nivel 5 (sin `id_ocupacion` ni `ocupacion_codigo` redundantes).
 
 ## Entidades principales
 
-- **PACIENTE**: núcleo de identificación y residencia.
-- **PACIENTE_NACIONALIDAD**: cardinalidad N:M país–paciente.
-- **OPOSICION_DONACION**: 1:1 con paciente (Ley 1805/2016).
-- **CONTACTO_SALUD**: evento de atención (urgencias).
-- **TECNOLOGIA_SALUD**: procedimientos, medicamentos, dispositivos, etc.
-- **RESULTADO_VALORACION**: egreso, complicaciones, condición destino.
-
-## Catálogos (tablas de referencia)
-
-País, TipoDocumento, Municipio (DIVIPOLA), Diagnóstico (CIE-10), ModalidadTecnologia, ViaIngreso, CausaAtencion, TipoTecnologiaSalud, FinalidadTecnologia, PrestadorSalud, entre otros.
+- **PACIENTE**: identificación y residencia
+- **PACIENTE_NACIONALIDAD**: países de nacionalidad (múltiples)
+- **OCUPACION**: árbol CIUO-88
+- **OPOSICION_DONACION**, **VOLUNTAD_ANTICIPADA**: estructuras separadas
+- **CONTACTO_SALUD**: urgencias

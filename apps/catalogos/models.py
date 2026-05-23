@@ -40,18 +40,49 @@ class TipoDocumento(models.Model):
         return f'{self.codigo} - {self.nombre}'
 
 
+class NivelCIUO(models.TextChoices):
+    """Jerarquía CIUO-88 adaptada para Colombia (DANE)."""
+    GRAN_GRUPO = '1', 'Gran grupo (1 dígito)'
+    SUBGRUPO_MAYOR = '2', 'Subgrupo mayor (2 dígitos)'
+    SUBGRUPO = '3', 'Subgrupo (3 dígitos)'
+    GRUPO_PRIMARIO = '4', 'Grupo primario (4 dígitos)'
+    OCUPACION = '5', 'Ocupación (código de 4 dígitos — asignable al paciente)'
+
+
 class Ocupacion(models.Model):
+    """
+    Catálogo CIUO-88 con jerarquía normativa.
+    Solo el nivel OCUPACION (5) se asigna al paciente en el momento de la atención.
+    """
     codigo = models.CharField('Código CIUO-88', max_length=4, primary_key=True)
-    nombre = models.CharField('Nombre de la ocupación', max_length=250)
+    nombre = models.CharField('Nombre', max_length=300)
+    nivel = models.CharField(
+        'Nivel jerárquico CIUO-88',
+        max_length=1,
+        choices=NivelCIUO.choices,
+        default=NivelCIUO.OCUPACION,
+    )
+    padre = models.ForeignKey(
+        'self',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='hijos',
+        verbose_name='Nodo superior en la jerarquía',
+    )
 
     class Meta:
         db_table = 'cat_ocupacion'
-        verbose_name = 'Ocupación'
-        verbose_name_plural = 'Ocupaciones (CIUO-88)'
+        verbose_name = 'Ocupación CIUO-88'
+        verbose_name_plural = 'Ocupaciones CIUO-88 (jerárquicas)'
         ordering = ['codigo']
 
     def __str__(self):
         return f'{self.codigo} - {self.nombre}'
+
+    @property
+    def es_asignable_paciente(self):
+        return self.nivel == NivelCIUO.OCUPACION
 
 
 class Municipio(models.Model):

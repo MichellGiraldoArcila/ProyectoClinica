@@ -14,7 +14,9 @@ Registrar y consultar datos clínicos interoperables según el anexo técnico de
 | Aspecto | Diagrama inicial | Implementación |
 |---------|------------------|----------------|
 | Oposición donación | FK invertida (`id_oposicion` → paciente) | `OneToOneField` Paciente → OposicionDonacion |
-| Nacionalidad | Campo único en paciente | Tabla `PacienteNacionalidad` (N:M) |
+| Nacionalidad | Campo único en paciente | Tabla `pac_nacionalidad` (N:M) + `paises_nacionalidad` en Paciente |
+| Ocupación duplicada | `id_ocupacion` + `ocupacion_codigo` | Una sola FK `ocupacion_id` → `cat_ocupacion` |
+| CIUO-88 plano | Tabla plana sin jerarquía | `cat_ocupacion` con `padre` y `nivel` (1-5) |
 | Discapacidad | Tabla intermedia correcta | `PacienteDiscapacidad` con FK a catálogo |
 | Voluntad anticipada | OK como tabla separada | `ForeignKey` (historial de documentos) |
 | Tecnologías | Polimorfismo confuso en un solo código | `TecnologiaSalud` + catálogos por tipo (CUPS, IUM, etc.) |

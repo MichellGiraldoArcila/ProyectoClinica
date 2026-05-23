@@ -23,9 +23,27 @@ class TipoDocumentoAdmin(CatalogoAdmin):
 
 @admin.register(models.Ocupacion)
 class OcupacionAdmin(CatalogoAdmin):
-    list_display = ('codigo', 'nombre')
+    list_display = ('codigo', 'nombre', 'nivel', 'padre', 'es_asignable')
     search_fields = ('codigo', 'nombre')
-    list_filter = ()
+    list_filter = ('nivel',)
+    autocomplete_fields = ('padre',)
+    fieldsets = (
+        ('CIUO-88 — Identificación', {'fields': ('codigo', 'nombre', 'nivel')}),
+        (
+            'Jerarquía normativa',
+            {
+                'fields': ('padre',),
+                'description': (
+                    'Gran grupo → Subgrupo mayor → Subgrupo → Grupo primario → Ocupación. '
+                    'Solo el nivel Ocupación (5) se asigna al paciente.'
+                ),
+            },
+        ),
+    )
+
+    @admin.display(boolean=True, description='Asignable a paciente')
+    def es_asignable(self, obj):
+        return obj.es_asignable_paciente
 
 
 @admin.register(models.Municipio)

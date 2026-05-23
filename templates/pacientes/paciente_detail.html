@@ -20,7 +20,13 @@
                     <dt class="col-sm-5">Fecha nacimiento</dt><dd class="col-sm-7">{{ paciente.fecha_nacimiento }}</dd>
                     <dt class="col-sm-5">Sexo biológico</dt><dd class="col-sm-7">{{ paciente.get_sexo_biologico_display }}</dd>
                     <dt class="col-sm-5">Identidad de género</dt><dd class="col-sm-7">{{ paciente.get_identidad_genero_display }}</dd>
-                    <dt class="col-sm-5">Ocupación</dt><dd class="col-sm-7">{{ paciente.ocupacion|default:"—" }}</dd>
+                    <dt class="col-sm-5">Ocupación</dt>
+                    <dd class="col-sm-7">
+                        {% if paciente.ocupacion %}
+                        {{ paciente.ocupacion }}
+                        {% if paciente.ocupacion_otra %} — {{ paciente.ocupacion_otra }}{% endif %}
+                        {% else %}—{% endif %}
+                    </dd>
                 </dl>
             </div>
         </div>
@@ -40,7 +46,7 @@
     </div>
     <div class="col-12 col-md-6">
         <div class="card shadow-sm">
-            <div class="card-header bg-light fw-semibold">Nacionalidades</div>
+            <div class="card-header bg-light fw-semibold">Países de nacionalidad (Res. 866)</div>
             <ul class="list-group list-group-flush">
                 {% for n in paciente.nacionalidades.all %}
                 <li class="list-group-item">{{ n.pais }}</li>
